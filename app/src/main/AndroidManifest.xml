@@ -24,7 +24,7 @@
         <activity
             android:name=".NewExpense"
             android:label="New Expense"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.ASSIST" />
             </intent-filter>

@@ -3,17 +3,22 @@ package com.kentito.ken.budgetlog;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.ViewGroup;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,13 +30,13 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ViewGroup root = findViewById(R.id.scene_root);
+
+
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NewExpense.class);
-                startActivity(intent);
-            }
+        fab.setOnClickListener(view -> {
+            startRevealActivity(view);
+            fab.setEnabled(false);
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -44,6 +49,23 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void startRevealActivity(View v) {
+        //calculates the center of the View v you are passing
+        int revealX = (int) (v.getX() + v.getWidth() / 2);
+        int revealY = (int) (v.getY() + v.getHeight() / 2);
+
+        //create an intent, that launches the second activity and pass the x and y coordinates
+        Intent intent = new Intent(this, NewExpense.class);
+        intent.putExtra(RevealAnimation.EXTRA_CIRCULAR_REVEAL_X, revealX);
+        intent.putExtra(RevealAnimation.EXTRA_CIRCULAR_REVEAL_Y, revealY);
+
+        //just start the activity as an shared transition, but set the options bundle to null
+        ActivityCompat.startActivity(this, intent, null);
+
+        //to prevent strange behaviours override the pending transitions
+        overridePendingTransition(0, 0);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -53,6 +75,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,6 +98,14 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setEnabled(true);
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
