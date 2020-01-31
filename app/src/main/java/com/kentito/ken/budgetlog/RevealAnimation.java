@@ -49,7 +49,7 @@ class RevealAnimation {
 
         // create the animator for this view (the start radius is zero)
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(mView, x, y, 0, finalRadius);
-        circularReveal.setDuration(300);
+        circularReveal.setDuration(500);
         circularReveal.setInterpolator(new AccelerateInterpolator());
 
         // make the view visible and start the animation
@@ -62,7 +62,7 @@ class RevealAnimation {
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(
                 mView, revealX, revealY, finalRadius, 0);
 
-        circularReveal.setDuration(300);
+        circularReveal.setDuration(500);
         circularReveal.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

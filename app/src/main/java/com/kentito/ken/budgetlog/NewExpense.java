@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 import com.google.android.material.snackbar.Snackbar;
@@ -24,6 +27,20 @@ public class NewExpense extends AppCompatActivity{
 
         RelativeLayout rootLayout = findViewById(R.id.root_layout);
         mRevealAnimation = new RevealAnimation(rootLayout,this.getIntent(),this);
+
+        TextView mDate = findViewById(R.id.date);
+        TextView mCategory = findViewById(R.id.category);
+        TextView mCost = findViewById(R.id.cost);
+
+        // Grabbing current date
+        mDate.setText(DateUtils.getInstance().getTime());
+
+        Button mSubmitButton = findViewById(R.id.submit);
+        mSubmitButton.setOnClickListener(v -> {
+            Snackbar.make(findViewById(android.R.id.content), "Date =" + mDate.getText() + " Category = " + mCategory.getText() + " Cost = " + mCost.getText(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            //TODO: Add sending intent
+
+        });
 
     }
     @Override
