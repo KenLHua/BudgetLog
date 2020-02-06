@@ -29,6 +29,7 @@ import java.io.FileWriter;
 public class NewExpense extends AppCompatActivity{
     RevealAnimation mRevealAnimation;
     File f;
+    File dataFile;
     Context context = NewExpense.this;
     Button test;
     String FILENAME = "expenses.txt";
@@ -51,14 +52,17 @@ public class NewExpense extends AppCompatActivity{
 
         Button mSubmitButton = findViewById(R.id.submit);
         test = findViewById(R.id.test);
+
+        // Data saved as __________\n
         mSubmitButton.setOnClickListener(v -> {
-            //Snackbar.make(findViewById(android.R.id.content), "Date =" + mDate.getText() + " Category = " + mCategory.getText() + " Cost = " + mCost.getText(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
             f = new File(context.getFilesDir(), "BudgetData");
-            if(!f.exists()) f.mkdir();
-            String data = "Date =" + mDate.getText() + " Category = " + mCategory.getText() + " Cost = " + mCost.getText();
+            if(!f.exists()) {
+                if(!f.mkdir()) Snackbar.make(findViewById(android.R.id.content),"Creating directory BudgetData failed",Snackbar.LENGTH_LONG ).show();
+            }
+            String data = "Date =" + mDate.getText() + " Category = " + mCategory.getText() + " Cost = " + mCost.getText() +"\n";
             try{
                 File gpxfile = new File(f, FILENAME);
-                FileWriter writer = new FileWriter(gpxfile);
+                FileWriter writer = new FileWriter(gpxfile,true);
                 writer.append(data);
                 writer.flush();
                 writer.close();
@@ -70,15 +74,16 @@ public class NewExpense extends AppCompatActivity{
             //TODO: Add sending intent
 
         });
-        // Todo: f.mkdir() creates a directory, not a file
+
         test.setOnClickListener(view -> {
             f = new File(context.getFilesDir(), "BudgetData");
-            if(!f.exists()){
+            dataFile = new File(f,Constant.FILE_NAME);
+            if(!dataFile.exists()){
                 Snackbar.make(findViewById(android.R.id.content), "no file exists", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
             else{
                 try {
-                    printFile(context.getFilesDir().toString(), "expenses.txt");
+                    printFile(f, FILENAME);
                     //Snackbar.make(findViewById(android.R.id.content), fileData, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }catch (Exception e){
                     Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -109,9 +114,10 @@ public class NewExpense extends AppCompatActivity{
         mRevealAnimation.unRevealActivity();
 
     }
-    private void printFile(String dir, String fileName){
+    private void printFile(File dir, String fileName){
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(dir + "/" + fileName));
+            File file = new File(dir, fileName);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
             String fileData;
             while ((fileData = reader.readLine()) != null) {
                 Log.i("Ken123", fileData);

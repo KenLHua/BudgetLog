@@ -1,11 +1,15 @@
 package com.kentito.ken.budgetlog;
 
+import androidx.appcompat.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
@@ -20,11 +24,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import java.io.File;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView expenseView;
+    private Context context = MainActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +110,20 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if (id == R.id.clear_all) {
+            new AlertDialog.Builder(context).setTitle("Confirm Data Deletion").setMessage("Are you sure?")
+                    // Should be (Confirm+ | Cancel-) but it is (-, +), so just switch them
+                    .setPositiveButton("Cancel", (dialog, which) -> dialog.cancel())
+                    .setNegativeButton("Confirm", ((dialog, which) -> {
+                        File f = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
+                        File dataFile = new File(f, Constant.FILE_NAME);
+                        if(dataFile.exists())
+                            if(dataFile.delete()) Snackbar.make(findViewById(android.R.id.content), "Success : Saved data has been deleted!", Snackbar.LENGTH_LONG).show();
+                            else Snackbar.make(findViewById(android.R.id.content), "Error : Saved data has not been deleted!", Snackbar.LENGTH_LONG).show();
+                    }
+                    )).show();
+
         }
 
         return super.onOptionsItemSelected(item);
