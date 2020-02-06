@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         else if (id == R.id.clear_all) {
+            // Prompt user if they really want to delete data
             new AlertDialog.Builder(context).setTitle("Confirm Data Deletion").setMessage("Are you sure?")
                     // Should be (Confirm+ | Cancel-) but it is (-, +), so just switch them
                     .setPositiveButton("Cancel", (dialog, which) -> dialog.cancel())

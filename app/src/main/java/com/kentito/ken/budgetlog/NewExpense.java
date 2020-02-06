@@ -54,6 +54,7 @@ public class NewExpense extends AppCompatActivity{
         test = findViewById(R.id.test);
 
         // Data saved as __________\n
+        // Writes data to file expenses.txt when submit button is pressed
         mSubmitButton.setOnClickListener(v -> {
             f = new File(context.getFilesDir(), "BudgetData");
             if(!f.exists()) {
@@ -70,8 +71,9 @@ public class NewExpense extends AppCompatActivity{
             catch (Exception e){
                 Snackbar.make(findViewById(android.R.id.content), "weewer1", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
-            //System.out.println("Files : " + files.length);
-            //TODO: Add sending intent
+            finally {
+                //TODO: Send back to main activity
+            }
 
         });
 
