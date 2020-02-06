@@ -1,6 +1,5 @@
 # BudgetLog
 
-### Last update : 1/22/2020
 
 ### Status : Incomplete
 
