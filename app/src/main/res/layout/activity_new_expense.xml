@@ -72,6 +72,13 @@
                 </com.google.android.material.textfield.TextInputEditText>
 
             </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/testBox"
+                android:layout_below="@id/date_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Stuff">
+            </TextView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/submit"

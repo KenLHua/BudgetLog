@@ -60,13 +60,14 @@ public class NewExpense extends AppCompatActivity{
             if(!f.exists()) {
                 if(!f.mkdir()) Snackbar.make(findViewById(android.R.id.content),"Creating directory BudgetData failed",Snackbar.LENGTH_LONG ).show();
             }
-            String data = "Date =" + mDate.getText() + " Category = " + mCategory.getText() + " Cost = " + mCost.getText() +"\n";
+            String data = "DATE=" + mDate.getText() + ",CATEGORY=" + mCategory.getText() + ",COST=" + mCost.getText() +"\n";
             try{
                 File gpxfile = new File(f, FILENAME);
                 FileWriter writer = new FileWriter(gpxfile,true);
                 writer.append(data);
                 writer.flush();
                 writer.close();
+                //TODO: Notify adapter to update
             }
             catch (Exception e){
                 Snackbar.make(findViewById(android.R.id.content), "weewer1", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -80,14 +81,28 @@ public class NewExpense extends AppCompatActivity{
         test.setOnClickListener(view -> {
             f = new File(context.getFilesDir(), "BudgetData");
             dataFile = new File(f,Constant.FILE_NAME);
+            TextView testBox = findViewById(R.id.testBox);
             if(!dataFile.exists()){
                 Snackbar.make(findViewById(android.R.id.content), "no file exists", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
             else{
                 try {
-                    printFile(f, FILENAME);
-                    //Snackbar.make(findViewById(android.R.id.content), fileData, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    BufferedReader reader = new BufferedReader(new FileReader(dataFile));
+                    String fileData;
+                    String date, category, cost;
+                    StringBuilder sb = new StringBuilder();
+                    int i = 1;
+                    // Show all data in form of "#. Date=DATE Category=CATEGORY Cost=COST"
+                    while ((fileData = reader.readLine()) != null) {
+                        date = fileData.substring(fileData.indexOf("DATE=")+5,fileData.indexOf(",CATE"));
+                        category = fileData.substring(fileData.indexOf("CATEGORY=")+9,fileData.indexOf(",COST="));
+                        cost = fileData.substring(fileData.indexOf("COST=")+5);
+                        sb.append(i+". Date="+date+" Category="+category+" Cost="+cost+"\n");
+                        i++;
+                    }
+                    testBox.setText(sb.toString());
                 }catch (Exception e){
+                    Log.e("DEV","Error boy", e);
                     Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     Log.e("DEV","Error boy", e);
                 }
@@ -96,37 +111,10 @@ public class NewExpense extends AppCompatActivity{
         });
 
     }
-    @Override
-    // Creates the checkmark
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.check_done, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Snackbar.make(findViewById(android.R.id.content)
-                , "Pressed", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-        return true;
-    }
     @Override
     public void onBackPressed(){
         mRevealAnimation.unRevealActivity();
-
-    }
-    private void printFile(File dir, String fileName){
-        try {
-            File file = new File(dir, fileName);
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String fileData;
-            while ((fileData = reader.readLine()) != null) {
-                Log.i("Ken123", fileData);
-            }
-        }catch (Exception e){
-            Log.e("IO Exception", e.toString());
-        }
 
     }
 
