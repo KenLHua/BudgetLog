@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
     private File dir;
     private File dataFile;
     private ArrayList<String> expenseData;
@@ -53,9 +54,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        ViewGroup root = findViewById(R.id.scene_root);
-
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
@@ -73,12 +71,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         recyclerView = findViewById(R.id.expense_list);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+
                 if (dy >0){
                     fab.hide();
                 }
@@ -89,12 +86,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         //Loading data into ArrayList expenseData
-
-        dir = new File(context.getFilesDir(), "BudgetData");
+        dir = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
         dataFile = new File(dir, Constant.FILE_NAME);
         TextView testBox = findViewById(R.id.mainTest);
+        expenseData = new ArrayList<>();
         if (!dataFile.exists()) {
             Snackbar.make(findViewById(android.R.id.content), "no file exists", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         } else {
@@ -103,7 +99,6 @@ public class MainActivity extends AppCompatActivity
                 String fileData;
                 String date, category, cost;
                 StringBuilder sb = new StringBuilder();
-                expenseData = new ArrayList<>();
                 // Show all data in form of "#. Date=DATE Category=CATEGORY Cost=COST"
                 while ((fileData = reader.readLine()) != null) {
                     date = fileData.substring(fileData.indexOf("DATE=") + 5, fileData.indexOf(",CATE"));
@@ -121,8 +116,11 @@ public class MainActivity extends AppCompatActivity
                 Log.e("DEV", "Error boy", e);
             }
         }
+        layoutManager = new LinearLayoutManager(this);
         mAdapter = new MyAdapter(expenseData.toArray(new String[0]));
         recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(layoutManager);
+
     }
 
 
