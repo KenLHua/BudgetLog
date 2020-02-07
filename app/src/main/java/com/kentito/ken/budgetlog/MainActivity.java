@@ -1,5 +1,6 @@
 package com.kentito.ken.budgetlog;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -74,6 +75,20 @@ public class MainActivity extends AppCompatActivity
         recyclerView = findViewById(R.id.expense_list);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy >0){
+                    fab.hide();
+                }
+                else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
 
         //Loading data into ArrayList expenseData
 
