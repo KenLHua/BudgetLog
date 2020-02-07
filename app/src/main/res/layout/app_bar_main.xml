@@ -31,5 +31,14 @@
         android:layout_margin="@dimen/fab_margin"
         app:tint="@android:color/white"
         app:srcCompat="@drawable/ic_add_white_36dp" />
+    <TextView
+        android:id="@+id/mainTest"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="100dp"
+        android:hint="test"
+        ></TextView>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.util.Log;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -25,8 +26,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
@@ -35,6 +40,9 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private File dir;
+    private File dataFile;
+    private ArrayList<String> expenseData;
 
     private Context context = MainActivity.this;
 
@@ -64,15 +72,48 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         recyclerView = findViewById(R.id.expense_list);
-        recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        //Todo: Create your own adapter
+        //Loading data into ArrayList expenseData
+
+        dir = new File(context.getFilesDir(), "BudgetData");
+        dataFile = new File(dir, Constant.FILE_NAME);
+        TextView testBox = findViewById(R.id.mainTest);
+        if (!dataFile.exists()) {
+            Snackbar.make(findViewById(android.R.id.content), "no file exists", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        } else {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(dataFile));
+                String fileData;
+                String date, category, cost;
+                StringBuilder sb = new StringBuilder();
+                expenseData = new ArrayList<>();
+                // Show all data in form of "#. Date=DATE Category=CATEGORY Cost=COST"
+                while ((fileData = reader.readLine()) != null) {
+                    date = fileData.substring(fileData.indexOf("DATE=") + 5, fileData.indexOf(",CATE"));
+                    category = fileData.substring(fileData.indexOf("CATEGORY=") + 9, fileData.indexOf(",COST="));
+                    cost = fileData.substring(fileData.indexOf("COST=") + 5);
+                    sb.append(date + "," + category + "," + cost);
+                    expenseData.add(sb.toString());
+                    sb.setLength(0);
+
+                }
+                testBox.setText(""+expenseData.size());
+            } catch (Exception e) {
+                Log.e("DEV", "Error boy", e);
+                Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Log.e("DEV", "Error boy", e);
+            }
+        }
+        mAdapter = new MyAdapter(expenseData.toArray(new String[0]));
+        recyclerView.setAdapter(mAdapter);
+    }
+
+
         // MyAdapter needs a dataset to work
         //mAdapter = new MyAdapter()
 
-    }
     // Todo: Use recycler adapter
     private void inflateExpenseView(){
 

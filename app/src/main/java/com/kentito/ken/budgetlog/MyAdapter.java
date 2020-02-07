@@ -1,6 +1,7 @@
 package com.kentito.ken.budgetlog;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -14,14 +15,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CardView v = (CardView) LayoutInflater.from(parent.getContext())
+        View v = (View) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.cardview, parent, false);
-        return new MyViewHolder(v.findViewById(R.id.cardText));
+        return new MyViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.textView.setText(mDataset[position]);
+        holder.text.setText(mDataset[position]);
     }
 
     @Override
@@ -30,10 +31,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder{
-        TextView textView;
-        MyViewHolder(TextView v){
+        CardView cv;
+        TextView text;
+        MyViewHolder(View v){
             super(v);
-            textView = v;
+            cv = (CardView)v.findViewById(R.id.cv);
+            text = (TextView) v.findViewById(R.id.person_name);
         }
     }
     // Provide a suitable constructor (depends on the kind of dataset)
