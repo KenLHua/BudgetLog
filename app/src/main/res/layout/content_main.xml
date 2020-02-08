@@ -10,10 +10,24 @@
 
    <androidx.recyclerview.widget.RecyclerView
        android:layout_width="match_parent"
-       android:layout_height="wrap_content"
+       android:layout_height="match_parent"
        android:id="@+id/expense_list"
+       android:layoutAnimation="@anim/layout_animation"
        >
 
    </androidx.recyclerview.widget.RecyclerView>
+
+   <TextView
+       android:id="@+id/no_data_text"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_centerHorizontal="true"
+       android:layout_centerVertical="true"
+       android:text="You don't have any data!"
+       android:textAlignment="center"
+       android:visibility="invisible"
+      >
+
+   </TextView>
 
 </RelativeLayout>

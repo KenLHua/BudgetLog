@@ -10,6 +10,8 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
+
 
 class RevealAnimation {
     static final String EXTRA_CIRCULAR_REVEAL_X = "EXTRA_CIRCULAR_REVEAL_X";
@@ -49,8 +51,8 @@ class RevealAnimation {
 
         // create the animator for this view (the start radius is zero)
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(mView, x, y, 0, finalRadius);
-        circularReveal.setDuration(500);
-        circularReveal.setInterpolator(new AccelerateInterpolator());
+        circularReveal.setDuration(300);
+        circularReveal.setInterpolator(new FastOutLinearInInterpolator());
 
         // make the view visible and start the animation
         mView.setVisibility(View.VISIBLE);
@@ -62,7 +64,7 @@ class RevealAnimation {
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(
                 mView, revealX, revealY, finalRadius, 0);
 
-        circularReveal.setDuration(500);
+        circularReveal.setDuration(300);
         circularReveal.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

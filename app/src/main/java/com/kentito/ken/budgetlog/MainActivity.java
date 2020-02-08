@@ -1,8 +1,8 @@
 package com.kentito.ken.budgetlog;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,21 +17,35 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
+
+import org.json.JSONArray;
 
 import java.io.File;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private RecyclerView expenseView;
-    private Context context = MainActivity.this;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private LinearLayoutManager layoutManager;
+    private File dir;
+    private File dataFile;
+    private ArrayList<String> expenseData;
+
+    Context context;
+    TextView testBox;
+    TextView noDataText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,29 +53,64 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        ViewGroup root = findViewById(R.id.scene_root);
-
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
+            fab.hide();
             startRevealActivity(view);
-            fab.setEnabled(false);
         });
+
+
+
+        testBox = findViewById(R.id.mainTest);
+        noDataText = findViewById(R.id.no_data_text);
+        context = MainActivity.this;
+
+
+
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        expenseView = findViewById(R.id.expense_list);
-    }
-    // Todo: Use recycler adapter
-    private void inflateExpenseView(){
+        JSONArray arr = DataUtils.getInstance().getEntries();
+        if(arr.length() == 0){
+            noDataText.setVisibility(View.VISIBLE);
+        }
+
+        recyclerView = findViewById(R.id.expense_list);
+
+
+        //Loading data into ArrayList expenseData
+        layoutManager = new LinearLayoutManager(this);
+        mAdapter = new MyAdapter(arr);
+        recyclerView.addOnItemTouchListener( new RecyclerView.SimpleOnItemTouchListener() {
+
+                                             });
+
+        SlideInUpAnimator anim = new SlideInUpAnimator();
+        anim.setInterpolator( new DecelerateInterpolator());
+        anim.setAddDuration(100);
+        recyclerView.setItemAnimator(anim);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy >0){
+                    fab.hide();
+                }
+                else{
+                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
 
     }
 
@@ -117,6 +166,16 @@ public class MainActivity extends AppCompatActivity
                     // Should be (Confirm+ | Cancel-) but it is (-, +), so just switch them
                     .setPositiveButton("Cancel", (dialog, which) -> dialog.cancel())
                     .setNegativeButton("Confirm", ((dialog, which) -> {
+
+                        JSONArray jsonArray = new JSONArray();
+                        ((MyAdapter) mAdapter).setDataset(jsonArray);
+                        DataUtils.getInstance().setEntries(jsonArray);
+                        synchronized(recyclerView) {
+                            recyclerView.notify();
+                        }
+                        TextView noDataText = findViewById(R.id.no_data_text);
+                        noDataText.setVisibility(View.VISIBLE);
+
                         File f = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
                         File dataFile = new File(f, Constant.FILE_NAME);
                         if(dataFile.exists())
@@ -125,20 +184,32 @@ public class MainActivity extends AppCompatActivity
                     }
                     )).show();
 
+
+
         }
 
         return super.onOptionsItemSelected(item);
     }
     @Override
     protected void onResume() {
+        if(DataUtils.getInstance().isRefreshRequired()){
+            ((MyAdapter) mAdapter).setDataset(DataUtils.getInstance().getEntries());
+            if(DataUtils.getInstance().getEntries().length() != 0){
+                noDataText.setVisibility(View.INVISIBLE);
+            }
+
+            synchronized(recyclerView) {
+                recyclerView.notify();
+            }
+        }
         super.onResume();
 
+
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.show();
         fab.setEnabled(true);
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -158,4 +229,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
