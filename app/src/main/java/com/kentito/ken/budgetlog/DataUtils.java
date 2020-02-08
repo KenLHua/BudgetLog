@@ -1,11 +1,7 @@
 package com.kentito.ken.budgetlog;
 
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.TextView;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 
@@ -14,24 +10,27 @@ import java.io.File;
 
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
 
-public class DataUtils {
-    private static JSONArray entries;
+class DataUtils {
+    private JSONArray entries;
     private static DataUtils instance;
-    private static Context c;
+    private boolean refreshRequired;
     private File dir ;
 
+
+
     private DataUtils() {
-        dir = new File(c.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
+
+        dir = new File(MyApplication.getContext().getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
         loadEntries(dir);
+        refreshRequired = false;
     }
 
-    public JSONArray getEntries() {
+    JSONArray getEntries() {
         return entries;
     }
 
-    public static DataUtils getInstance() {
+    static DataUtils getInstance() {
         if (instance == null) {
             instance = new DataUtils();
         }
@@ -39,13 +38,8 @@ public class DataUtils {
         return instance;
     }
 
-    public static void setAppContext(Context context){
-        if (c == null){
-            c = context;
-        }
-    }
 
-    public JSONArray loadEntries(File dir) {
+    private JSONArray loadEntries(File dir) {
         try {
             File gpxfile = new File(dir, Constant.FILE_NAME);
             StringBuilder sb = new StringBuilder();
@@ -67,13 +61,31 @@ public class DataUtils {
         return getEntries();
     }
 
-    public void saveEntries() {
+    void saveEntries() {
         try {
             File gpxfile = new File(dir, Constant.FILE_NAME);
             FileWriter writer = new FileWriter(gpxfile);
             writer.append(entries.toString());
             writer.flush();
             writer.close();
-        } catch (Exception e) {}
+            refreshRequired = true;
+        } catch (Exception e) {
+            Log.e("DataUtils Saving", e.toString(), e);
+        }
+    }
+
+    void setEntries(JSONArray entries) {
+        this.entries = entries;
+    }
+
+    boolean isRefreshRequired() {
+        if (refreshRequired){
+            refreshRequired = false;
+            return true;
+        }
+        return false;
+    }
+    void setRefreshRequired(boolean b){
+        refreshRequired = b;
     }
 }

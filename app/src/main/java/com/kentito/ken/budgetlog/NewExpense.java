@@ -69,8 +69,10 @@ public class NewExpense extends AppCompatActivity{
                 entry.put("category", mCategory.getText());
                 entry.put("cost", mCost.getText());
                 entries.put(entry);
+                DataUtils.getInstance().setEntries(entries);
+                DataUtils.getInstance().setRefreshRequired(true);
+
             }catch (Exception e){Log.e("JSON", e.toString(), e);}
-            DataUtils.getInstance().saveEntries();
 
 
         });
@@ -82,7 +84,7 @@ public class NewExpense extends AppCompatActivity{
 
                 for(int i = 0; i < entries.length(); i++) {
                     iter = entries.getJSONObject(i);
-                    sb.append("Date "+ iter.get(Constant.JSON_DATE) + " Category " + iter.get(Constant.JSON_CATEGORY) + " Cost " + iter.get(Constant.JSON_COST) +'\n');
+                    sb.append("Date ").append(iter.get(Constant.JSON_DATE)).append(" Category ").append(iter.get(Constant.JSON_CATEGORY)).append(" Cost ").append(iter.get(Constant.JSON_COST)).append('\n');
                 }
                 testBox.setText(sb.toString());
             }catch (Exception e){
@@ -96,6 +98,11 @@ public class NewExpense extends AppCompatActivity{
     public void onBackPressed(){
         mRevealAnimation.unRevealActivity();
 
+    }
+    @Override
+    public void onStop() {
+        DataUtils.getInstance().saveEntries();
+        super.onStop();
     }
 
 }

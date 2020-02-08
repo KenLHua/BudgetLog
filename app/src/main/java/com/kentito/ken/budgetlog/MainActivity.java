@@ -3,12 +3,10 @@ package com.kentito.ken.budgetlog;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.util.Log;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,18 +19,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
+import org.json.JSONArray;
+
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 
 
@@ -46,7 +43,9 @@ public class MainActivity extends AppCompatActivity
     private File dataFile;
     private ArrayList<String> expenseData;
 
-    private Context context = MainActivity.this;
+    Context context;
+    TextView testBox;
+    TextView noDataText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,30 +53,54 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             fab.hide();
             startRevealActivity(view);
         });
 
+
+
+        testBox = findViewById(R.id.mainTest);
+        noDataText = findViewById(R.id.no_data_text);
+        context = MainActivity.this;
+
+
+
+
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        DataUtils.setAppContext(getApplicationContext());
+        JSONArray arr = DataUtils.getInstance().getEntries();
+        if(arr.length() == 0){
+            noDataText.setVisibility(View.VISIBLE);
+        }
 
         recyclerView = findViewById(R.id.expense_list);
 
+
+        //Loading data into ArrayList expenseData
+        layoutManager = new LinearLayoutManager(this);
+        mAdapter = new MyAdapter(arr);
+        recyclerView.addOnItemTouchListener( new RecyclerView.SimpleOnItemTouchListener() {
+
+                                             });
+
+        SlideInUpAnimator anim = new SlideInUpAnimator();
+        anim.setInterpolator( new DecelerateInterpolator());
+        anim.setAddDuration(100);
+        recyclerView.setItemAnimator(anim);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-
                 if (dy >0){
                     fab.hide();
                 }
@@ -88,52 +111,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //Loading data into ArrayList expenseData
-        dir = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
-        dataFile = new File(dir, Constant.FILE_NAME);
-        TextView testBox = findViewById(R.id.mainTest);
-        expenseData = new ArrayList<>();
-        if (!dataFile.exists()) {
-            Snackbar.make(findViewById(android.R.id.content), "no file exists", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-        } else {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(dataFile));
-                String fileData;
-                String date, category, cost;
-                StringBuilder sb = new StringBuilder();
-                // Show all data in form of "#. Date=DATE Category=CATEGORY Cost=COST"
-                while ((fileData = reader.readLine()) != null) {
-                    date = fileData.substring(fileData.indexOf("DATE=") + 5, fileData.indexOf(",CATE"));
-                    category = fileData.substring(fileData.indexOf("CATEGORY=") + 9, fileData.indexOf(",COST="));
-                    cost = fileData.substring(fileData.indexOf("COST=") + 5);
-                    sb.append(date + "," + category + "," + cost);
-                    expenseData.add(sb.toString());
-                    sb.setLength(0);
-
-                }
-                testBox.setText(""+expenseData.size());
-            } catch (Exception e) {
-                Log.e("DEV", "Error boy", e);
-                Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                Log.e("DEV", "Error boy", e);
-            }
-        }
-        layoutManager = new LinearLayoutManager(this);
-        mAdapter = new MyAdapter(expenseData.toArray(new String[0]));
-        recyclerView.addOnItemTouchListener( new RecyclerView.SimpleOnItemTouchListener() {
-
-                                             });
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(layoutManager);
-
-    }
-
-
-        // MyAdapter needs a dataset to work
-        //mAdapter = new MyAdapter()
-
-    // Todo: Use recycler adapter
-    private void inflateExpenseView(){
 
     }
 
@@ -189,6 +166,16 @@ public class MainActivity extends AppCompatActivity
                     // Should be (Confirm+ | Cancel-) but it is (-, +), so just switch them
                     .setPositiveButton("Cancel", (dialog, which) -> dialog.cancel())
                     .setNegativeButton("Confirm", ((dialog, which) -> {
+
+                        JSONArray jsonArray = new JSONArray();
+                        ((MyAdapter) mAdapter).setDataset(jsonArray);
+                        DataUtils.getInstance().setEntries(jsonArray);
+                        synchronized(recyclerView) {
+                            recyclerView.notify();
+                        }
+                        TextView noDataText = findViewById(R.id.no_data_text);
+                        noDataText.setVisibility(View.VISIBLE);
+
                         File f = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
                         File dataFile = new File(f, Constant.FILE_NAME);
                         if(dataFile.exists())
@@ -198,12 +185,23 @@ public class MainActivity extends AppCompatActivity
                     )).show();
 
 
+
         }
 
         return super.onOptionsItemSelected(item);
     }
     @Override
     protected void onResume() {
+        if(DataUtils.getInstance().isRefreshRequired()){
+            ((MyAdapter) mAdapter).setDataset(DataUtils.getInstance().getEntries());
+            if(DataUtils.getInstance().getEntries().length() != 0){
+                noDataText.setVisibility(View.INVISIBLE);
+            }
+
+            synchronized(recyclerView) {
+                recyclerView.notify();
+            }
+        }
         super.onResume();
 
 
@@ -212,8 +210,6 @@ public class MainActivity extends AppCompatActivity
         fab.setEnabled(true);
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -233,4 +229,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
