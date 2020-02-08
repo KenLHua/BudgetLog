@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
+            fab.hide();
             startRevealActivity(view);
-            fab.setEnabled(false);
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        DataUtils.setAppContext(getApplicationContext());
 
         recyclerView = findViewById(R.id.expense_list);
 
@@ -118,6 +120,9 @@ public class MainActivity extends AppCompatActivity
         }
         layoutManager = new LinearLayoutManager(this);
         mAdapter = new MyAdapter(expenseData.toArray(new String[0]));
+        recyclerView.addOnItemTouchListener( new RecyclerView.SimpleOnItemTouchListener() {
+
+                                             });
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -192,6 +197,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     )).show();
 
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -200,7 +206,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.show();
         fab.setEnabled(true);
     }
 
