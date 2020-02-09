@@ -8,6 +8,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
@@ -64,7 +65,7 @@ class RevealAnimation {
         Animator circularReveal = ViewAnimationUtils.createCircularReveal(
                 mView, revealX, revealY, finalRadius, 0);
 
-        circularReveal.setDuration(300);
+        circularReveal.setDuration(Constant.ANIMATION_FAB_DURATION);
         circularReveal.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

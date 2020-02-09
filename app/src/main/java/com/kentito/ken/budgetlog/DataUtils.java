@@ -78,6 +78,12 @@ class DataUtils {
         this.entries = entries;
     }
 
+    void removeEntry (int position){
+        entries.remove(position);
+        refreshRequired = true;
+
+    }
+
     boolean isRefreshRequired() {
         if (refreshRequired){
             refreshRequired = false;

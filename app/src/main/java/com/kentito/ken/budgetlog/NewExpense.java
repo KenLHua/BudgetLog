@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class NewExpense extends AppCompatActivity{
     String FILENAME = "expenses.txt";
     JSONObject entry = new JSONObject();
     JSONArray entries;
+    Button mSubmitButton;
 
 
     @Override
@@ -47,10 +49,10 @@ public class NewExpense extends AppCompatActivity{
 
         // Grabbing current date
         mDate.setText(DateUtils.getInstance().getTime());
-        mCategory.setText("CategoryTest1");
-        mCost.setText("CostTest1");
+        mCategory.setText("");
+        mCost.setText("");
 
-        Button mSubmitButton = findViewById(R.id.submit);
+        mSubmitButton = findViewById(R.id.submit);
         test = findViewById(R.id.test);
 
         // Create subfolder if it didn't exist
@@ -64,6 +66,9 @@ public class NewExpense extends AppCompatActivity{
 
 
         mSubmitButton.setOnClickListener(v -> {
+            // Disable user touches as the activity disappears
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             try {
                 entry.put("date", mDate.getText());
                 entry.put("category", mCategory.getText());
@@ -71,6 +76,7 @@ public class NewExpense extends AppCompatActivity{
                 entries.put(entry);
                 DataUtils.getInstance().setEntries(entries);
                 DataUtils.getInstance().setRefreshRequired(true);
+                mRevealAnimation.unRevealActivity();
 
             }catch (Exception e){Log.e("JSON", e.toString(), e);}
 
@@ -92,6 +98,7 @@ public class NewExpense extends AppCompatActivity{
                 Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show(); }
 
         });
+
     }
 
     @Override

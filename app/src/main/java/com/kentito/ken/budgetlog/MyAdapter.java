@@ -1,11 +1,12 @@
 package com.kentito.ken.budgetlog;
 
-import android.content.res.Resources;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -17,24 +18,26 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
-    private JSONArray mDataset;
+    private JSONArray mDataSet;
+    private RecyclerViewClickListener mListener;
 
+    MyAdapter(JSONArray myDataSet, RecyclerViewClickListener listener) {
+        mDataSet = myDataSet;
+        mListener = listener; }
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.cardview, parent, false);
-        return new MyViewHolder(v);
+        return new MyViewHolder(v, mListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        /*runEnterAnimation(holder.v, position);*/
         try {
-            JSONObject js = (JSONObject) mDataset.get(position);
-            holder.date.setText((CharSequence) js.get(Constant.JSON_DATE));
-            holder.category.setText((CharSequence) js.get(Constant.JSON_CATEGORY));
-            holder.cost.setText((CharSequence) js.get(Constant.JSON_COST));
+            JSONObject js = (JSONObject) mDataSet.get(position);
+            holder.bind( (CharSequence) js.get(Constant.JSON_DATE),
+                    (CharSequence) js.get(Constant.JSON_CATEGORY), (CharSequence) js.get(Constant.JSON_COST), null);
         } catch (JSONException e) {
             Log.e("Adapter", e.toString(), e);
         }
@@ -42,43 +45,57 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
 
     @Override
     public int getItemCount() {
-        return mDataset.length();
+        return mDataSet.length();
     }
 
     //Todo: Add function for add, remove instead of refresh all data
-    void setDataset(JSONArray mDataset) {
-        this.mDataset = mDataset;
+    void setDataset(JSONArray mDataSet) {
+        this.mDataSet = mDataSet;
         this.notifyDataSetChanged();
 
     }
-    public JSONArray getDataset(){
-        return mDataset;
+    public JSONArray getDataSet(){
+        return mDataSet;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder{
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         TextView date, cost, category, note;
+        CardView cv;
         View v;
-        MyViewHolder(View v){
+        private RecyclerViewClickListener mViewListener;
+
+        MyViewHolder(View v, RecyclerViewClickListener listener){
             super(v);
             this.v = v;
+            cv = v.findViewById(R.id.item_card);
+            mViewListener = listener;
+            cv.setOnClickListener(this);
+            cv.setOnCreateContextMenuListener(this);
             date = v.findViewById(R.id.date);
             cost = v.findViewById(R.id.cost);
             category = v.findViewById(R.id.category);
 
         }
-    }
-    // Provide a suitable constructor (depends on the kind of dataset)
-    MyAdapter(JSONArray myDataset) {
-        mDataset = myDataset;
-    }
 
-    private void runEnterAnimation(View view, int position) {
-        view.setTranslationY(Resources.getSystem().getDisplayMetrics().heightPixels);
-        view.animate()
-                .translationY(0)
-                .setInterpolator(new DecelerateInterpolator(3.f))
-                .setDuration(700)
-                .start();
+        void bind(CharSequence sDate, CharSequence sCategory, CharSequence sCost, CharSequence sNote){
+            date.setText(sDate);
+            category.setText(sCategory);
+            cost.setText(sCost);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mViewListener.onClick(v, getAdapterPosition());
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            MenuItem Edit = menu.add(getAdapterPosition(), 1, 1, "Edit");
+            MenuItem Delete = menu.add(getAdapterPosition(), 100, 2, "Delete");//groupId, itemId, order, title
+
+
+        }
+
     }
 
 
