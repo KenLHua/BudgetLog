@@ -6,14 +6,17 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    android:background="#e0e0e0">
 
    <androidx.recyclerview.widget.RecyclerView
+       android:layout_marginTop="6dp"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:id="@+id/expense_list"
        android:layoutAnimation="@anim/layout_animation"
-       >
+       android:paddingHorizontal="6dp"
+       tools:targetApi="o">
 
    </androidx.recyclerview.widget.RecyclerView>
 

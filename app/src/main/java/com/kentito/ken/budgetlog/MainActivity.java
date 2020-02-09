@@ -24,8 +24,10 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -56,18 +58,13 @@ public class MainActivity extends AppCompatActivity
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             fab.hide();
+            fab.setEnabled(false);
             startRevealActivity(view);
         });
-
-
 
         testBox = findViewById(R.id.mainTest);
         noDataText = findViewById(R.id.no_data_text);
         context = MainActivity.this;
-
-
-
-
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,16 +83,15 @@ public class MainActivity extends AppCompatActivity
 
 
         //Loading data into ArrayList expenseData
+        RecyclerViewClickListener listener = (v, position) -> Toast.makeText(context, "Position " + position, Toast.LENGTH_SHORT).show();
         layoutManager = new LinearLayoutManager(this);
-        mAdapter = new MyAdapter(arr);
-        recyclerView.addOnItemTouchListener( new RecyclerView.SimpleOnItemTouchListener() {
-
-                                             });
+        mAdapter = new MyAdapter(arr, listener);
 
         SlideInUpAnimator anim = new SlideInUpAnimator();
-        anim.setInterpolator( new DecelerateInterpolator());
+        anim.setInterpolator(new DecelerateInterpolator());
         anim.setAddDuration(100);
         recyclerView.setItemAnimator(anim);
+
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -112,9 +108,13 @@ public class MainActivity extends AppCompatActivity
         });
 
 
+
     }
 
     private void startRevealActivity(View v) {
+        //Disable touch during animation
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         //calculates the center of the View v you are passing
         int revealX = (int) (v.getX() + v.getWidth() / 2);
         int revealY = (int) (v.getY() + v.getHeight() / 2);
@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity
                         File f = new File(context.getFilesDir(), Constant.SUB_FOLDER_BUDGET_DATA);
                         File dataFile = new File(f, Constant.FILE_NAME);
                         if(dataFile.exists())
-                            if(dataFile.delete()) Snackbar.make(findViewById(android.R.id.content), "Success : Saved data has been deleted!", Snackbar.LENGTH_LONG).show();
-                            else Snackbar.make(findViewById(android.R.id.content), "Error : Saved data has not been deleted!", Snackbar.LENGTH_LONG).show();
+                            if(dataFile.delete()) Snackbar.make(findViewById(android.R.id.content), "Success : Saved data has been deleted!", Snackbar.LENGTH_SHORT).show();
+                            else Snackbar.make(findViewById(android.R.id.content), "Error : Saved data has not been deleted!", Snackbar.LENGTH_SHORT).show();
                     }
                     )).show();
 
@@ -191,17 +191,14 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
     @Override
+    protected void onStop(){
+        DataUtils.getInstance().saveEntries();
+        super.onStop();
+    }
+    @Override
     protected void onResume() {
-        if(DataUtils.getInstance().isRefreshRequired()){
-            ((MyAdapter) mAdapter).setDataset(DataUtils.getInstance().getEntries());
-            if(DataUtils.getInstance().getEntries().length() != 0){
-                noDataText.setVisibility(View.INVISIBLE);
-            }
-
-            synchronized(recyclerView) {
-                recyclerView.notify();
-            }
-        }
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        attemptRefresh();
         super.onResume();
 
 
@@ -229,5 +226,37 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        int id = item.getItemId();
+        switch(id){
+            case 1:{
+                Toast.makeText(context, item.getGroupId()+"edit", Toast.LENGTH_SHORT).show();
+            }
+            case 100:{
+                DataUtils.getInstance().removeEntry(item.getGroupId());
+                //Todo: check if onStop works else, DataUtils.getInstance().saveEntries();
+            }
+            default:{}
+
+        }
+        attemptRefresh();
+        return true;
+
+    }
+    private void attemptRefresh(){
+        if(DataUtils.getInstance().isRefreshRequired()){
+            ((MyAdapter) mAdapter).setDataset(DataUtils.getInstance().getEntries());
+            if(DataUtils.getInstance().getEntries().length() != 0){
+                noDataText.setVisibility(View.INVISIBLE);
+            }
+            synchronized(recyclerView) {
+                recyclerView.notify();
+            }
+        }
+    }
+
+
 
 }
