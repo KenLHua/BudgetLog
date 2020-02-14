@@ -111,7 +111,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void startRevealActivity(View v) {
+    private void startRevealActivity(View v)
+    {
         //Disable touch during animation
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
