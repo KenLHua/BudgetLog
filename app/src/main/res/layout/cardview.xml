@@ -6,7 +6,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/item_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         app:cardCornerRadius="2dp"
         app:cardUseCompatPadding="true"
         app:cardElevation="3dp"
@@ -21,12 +21,12 @@
 
             <TextView
                 android:id="@+id/cost"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_alignStart="@id/note"
                 android:drawableStart="@drawable/ic_attach_money_black_18dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginTop="15dp"
+                android:layout_above="@id/note"
+                android:drawablePadding="4dp"
                 >
 
             </TextView>
@@ -42,10 +42,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/date"
-                android:layout_below="@id/category"
-                android:textSize="18sp"
-                android:hint="text"
+                android:layout_alignParentBottom="true"
+                android:textSize="15sp"
                 android:drawableStart="@drawable/ic_date_range_black_24dp"
+                />
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="26dp"
+                android:textAlignment="textStart"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:paddingTop="4dp"
+                android:id="@+id/note"
+                android:textSize= "15sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:drawableStart="@drawable/ic_notes_18px"
+                android:drawablePadding="4dp"
                 />
 
         </RelativeLayout>

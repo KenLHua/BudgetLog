@@ -56,6 +56,7 @@
                 </com.google.android.material.textfield.TextInputEditText>
 
             </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/date_layout"
                 android:layout_width="match_parent"
@@ -75,6 +76,27 @@
                 </com.google.android.material.textfield.TextInputEditText>
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/note_layout"
+                android:layout_width="match_parent"
+                android:layout_below="@id/date_layout"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/colorPrimaryDark"
+                android:padding="5dp"
+                android:hint="@string/note">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/note"
+                    style="@style/DarkTextView"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    >
+                </com.google.android.material.textfield.TextInputEditText>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:id="@+id/testBox"
                 android:layout_below="@id/date_layout"

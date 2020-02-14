@@ -46,11 +46,12 @@ public class NewExpense extends AppCompatActivity{
         TextView mDate = findViewById(R.id.date);
         TextView mCategory = findViewById(R.id.category);
         TextView mCost = findViewById(R.id.cost);
+        TextView mNote = findViewById(R.id.note);
 
         // Grabbing current date
         mDate.setText(DateUtils.getInstance().getTime());
-        mCategory.setText("");
-        mCost.setText("");
+        mCategory.setText("Food");
+        mCost.setText("$");
 
         mSubmitButton = findViewById(R.id.submit);
         test = findViewById(R.id.test);
@@ -72,8 +73,15 @@ public class NewExpense extends AppCompatActivity{
             try {
                 entry.put("date", mDate.getText());
                 entry.put("category", mCategory.getText());
-                entry.put("cost", mCost.getText());
+
+                CharSequence cost = mCost.getText();
+                if (cost.length() <= 1){
+                    cost = "$0";
+                }
+                entry.put("cost", cost.subSequence(1,cost.length()));
+                entry.put("note", mNote.getText());
                 entries.put(entry);
+
                 DataUtils.getInstance().setEntries(entries);
                 DataUtils.getInstance().setRefreshRequired(true);
                 mRevealAnimation.unRevealActivity();

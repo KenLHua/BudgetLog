@@ -7,5 +7,6 @@ class Constant {
     static final String JSON_DATE = "date";
     static final String JSON_CATEGORY = "category";
     static final String JSON_COST = "cost";
+    static final String JSON_NOTE = "note";
     static final int ANIMATION_FAB_DURATION = 300;
 }

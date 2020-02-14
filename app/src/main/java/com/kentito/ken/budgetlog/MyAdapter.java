@@ -37,7 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
         try {
             JSONObject js = (JSONObject) mDataSet.get(position);
             holder.bind( (CharSequence) js.get(Constant.JSON_DATE),
-                    (CharSequence) js.get(Constant.JSON_CATEGORY), (CharSequence) js.get(Constant.JSON_COST), null);
+                    (CharSequence) js.get(Constant.JSON_CATEGORY), (CharSequence) js.get(Constant.JSON_COST), (CharSequence) js.get(Constant.JSON_NOTE));
         } catch (JSONException e) {
             Log.e("Adapter", e.toString(), e);
         }
@@ -67,13 +67,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
         MyViewHolder(View v, RecyclerViewClickListener listener){
             super(v);
             this.v = v;
-            cv = v.findViewById(R.id.item_card);
             mViewListener = listener;
+
+            cv = v.findViewById(R.id.item_card);
             cv.setOnClickListener(this);
             cv.setOnCreateContextMenuListener(this);
+
             date = v.findViewById(R.id.date);
             cost = v.findViewById(R.id.cost);
             category = v.findViewById(R.id.category);
+            note = v.findViewById(R.id.note);
 
         }
 
@@ -81,6 +84,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
             date.setText(sDate);
             category.setText(sCategory);
             cost.setText(sCost);
+            note.setText(sNote);
         }
 
         @Override
