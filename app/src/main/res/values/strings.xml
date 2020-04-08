@@ -13,4 +13,8 @@
     <string name="test">Test</string>
     <string name="clear_all">Clear All</string>
     <string name="note">Note</string>
+    <string-array name="categories">
+        <item>Food</item>
+        <item>Clothes</item>
+    </string-array>
 </resources>

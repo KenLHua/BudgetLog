@@ -7,7 +7,7 @@ class DateUtils {
     private SimpleDateFormat sdf;
     private static DateUtils instance = null;
     private DateUtils(){
-        sdf = new SimpleDateFormat("M/dd/YY HH:mm", Locale.getDefault());
+        sdf = new SimpleDateFormat("M/dd/YY h:mm a", Locale.getDefault());
     }
     String getTime(){
         return sdf.format(new Date());

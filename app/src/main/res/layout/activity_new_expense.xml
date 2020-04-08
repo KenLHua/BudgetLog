@@ -14,14 +14,19 @@
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:padding="5dp"
-        android:hint="@string/category">
+        android:hint="@string/category"
+        android:clickable="false"
+        android:focusable="false">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
+        <AutoCompleteTextView
             android:id="@+id/category"
-            android:layout_height="wrap_content"
-            android:inputType="textCapWords">
-        </com.google.android.material.textfield.TextInputEditText>
+            android:imeOptions="actionNext"
+            android:padding="10dp"
+            android:inputType="textAutoComplete"
+            android:maxLines="1"
+            android:completionThreshold="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,15 +46,17 @@
             >
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/cost_layout"
-                android:layout_width="match_parent"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 app:boxBackgroundColor="@color/colorPrimaryDark"
                 android:padding="5dp"
+                android:layout_toRightOf="@id/date_layout"
                 android:hint="@string/cost">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/cost"
+                    android:text="$"
                     android:layout_height="wrap_content"
                     style="@style/DarkTextView"
                     android:inputType="numberDecimal"
@@ -60,8 +67,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/date_layout"
-                android:layout_width="match_parent"
-                android:layout_below="@id/cost_layout"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 app:boxBackgroundColor="@color/colorPrimaryDark"
                 android:padding="5dp"
@@ -90,6 +96,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:id="@+id/note"
+                    android:imeOptions="actionDone"
                     style="@style/DarkTextView"
                     android:layout_height="wrap_content"
                     android:inputType="text"
@@ -98,13 +105,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/testBox"
-                android:layout_below="@id/date_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Stuff">
-            </TextView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/submit"

@@ -4,18 +4,22 @@ import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 class DataUtils {
     private JSONArray entries;
     private static DataUtils instance;
     private boolean refreshRequired;
     private File dir ;
+    private static String[] categories;
 
 
 
@@ -59,6 +63,24 @@ class DataUtils {
             }
         } catch (Exception e) { Log.e("JSON Loading", e.toString(), e); }
         return getEntries();
+    }
+    String[] loadCategories(){
+        Map<String, Integer> categoryMap = new HashMap<String,Integer>();
+        for(int i =0; i < entries.length(); i++){
+            try {
+                JSONObject entry = (JSONObject) entries.get(i);
+                String category = (String) entry.get("category");
+                if(!categoryMap.containsKey(category)){
+                    categoryMap.put(category,1);
+                }
+            }
+            catch(Exception e){}
+        }
+        categories = categoryMap.keySet().toArray(new String[0]);
+        return categories;
+    }
+    String[] getCategories(){
+        return categories;
     }
 
     void saveEntries() {

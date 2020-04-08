@@ -5,7 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,8 +53,7 @@ public class NewExpense extends AppCompatActivity{
 
         // Grabbing current date
         mDate.setText(DateUtils.getInstance().getTime());
-        mCategory.setText("Food");
-        mCost.setText("$");
+
 
         mSubmitButton = findViewById(R.id.submit);
         test = findViewById(R.id.test);
@@ -90,23 +92,22 @@ public class NewExpense extends AppCompatActivity{
 
 
         });
-        test.setOnClickListener(view -> {
-            try {
-                JSONObject iter;
-                StringBuilder sb = new StringBuilder();
-                TextView testBox = findViewById(R.id.testBox);
 
-                for(int i = 0; i < entries.length(); i++) {
-                    iter = entries.getJSONObject(i);
-                    sb.append("Date ").append(iter.get(Constant.JSON_DATE)).append(" Category ").append(iter.get(Constant.JSON_CATEGORY)).append(" Cost ").append(iter.get(Constant.JSON_COST)).append('\n');
-                }
-                testBox.setText(sb.toString());
-            }catch (Exception e){
-                Log.e("DEV","Error boy", e);
-                Snackbar.make(findViewById(android.R.id.content), e.toString(), Snackbar.LENGTH_LONG).setAction("Action", null).show(); }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AutoCompleteTextView mCategory = findViewById(R.id.category);
+        Log.d("Debug", "Ken " + DataUtils.getInstance().getCategories().toString());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, DataUtils.getInstance().getCategories());
+        mCategory.setAdapter(adapter);
+        mCategory.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mCategory.showDropDown();
+            }
         });
-
     }
 
     @Override

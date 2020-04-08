@@ -59,7 +59,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
-        TextView date, cost, category, note;
+        TextView date, cost, category, note, note_expanded;
         CardView cv;
         View v;
         private RecyclerViewClickListener mViewListener;

@@ -1,16 +1,24 @@
 package com.kentito.ken.budgetlog;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -19,13 +27,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.ChangeBounds;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,8 +96,43 @@ public class MainActivity extends AppCompatActivity
         recyclerView = findViewById(R.id.expense_list);
 
 
-        //Loading data into ArrayList expenseData
-        RecyclerViewClickListener listener = (v, position) -> Toast.makeText(context, "Position " + position, Toast.LENGTH_SHORT).show();
+
+        // Expands card when clicked on
+        RecyclerViewClickListener listener = (v, position) -> {
+
+            // Todo : Add reverse animation
+            MaterialCardView cardViewManager = (MaterialCardView) layoutManager.findViewByPosition(position);
+            CardView cardView = (CardView) cardViewManager.findViewById(R.id.item_card);
+            TextView collapsed = (TextView) cardView.findViewById(R.id.is_collapsed);
+            TextView note = cardView.findViewById(R.id.note);
+
+            ViewGroup.LayoutParams cardParams = cardView.getLayoutParams();
+            RelativeLayout.LayoutParams noteParams = (RelativeLayout.LayoutParams) note.getLayoutParams();
+
+            if(collapsed.getText().equals("1")){
+
+                // Moving the notes field
+                note.setMaxLines(Integer.MAX_VALUE);
+                note.setEllipsize(null);
+                noteParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                //noteParams.rightMargin = (int) getResources().getDimension(R.dimen.note_rightMargin)+1;
+                noteParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                note.setLayoutParams(noteParams);
+                collapsed.setText("0");
+            }
+            else{
+
+                note.setMaxLines(1);
+                note.setEllipsize(TextUtils.TruncateAt.END);
+                noteParams.width = (int) getResources().getDimension(R.dimen.note_width)+1;
+                collapsed.setText("1");
+
+//                cardParams.height =(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 75, getResources().getDisplayMetrics());;
+//                cardView.setLayoutParams(cardParams);
+            }
+            TransitionManager.beginDelayedTransition(findViewById(R.id.expense_list));
+
+        };
         layoutManager = new LinearLayoutManager(this);
         mAdapter = new MyAdapter(arr, listener);
 
@@ -231,12 +280,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onContextItemSelected(MenuItem item){
         int id = item.getItemId();
+        //Toast.makeText(context, String.valueOf(id)+" "+ String.valueOf(item.getGroupId()), Toast.LENGTH_SHORT).show();
         switch(id){
             case 1:{
-                Toast.makeText(context, item.getGroupId()+"edit", Toast.LENGTH_SHORT).show();
+                testBox.setText("edit"+id);
+                break;
             }
             case 100:{
                 DataUtils.getInstance().removeEntry(item.getGroupId());
+                testBox.setText("Delete"+id);
+                break;
+
                 //Todo: check if onStop works else, DataUtils.getInstance().saveEntries();
             }
             default:{}
@@ -258,6 +312,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DataUtils.getInstance().loadCategories();
+    }
 }

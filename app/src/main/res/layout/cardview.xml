@@ -1,70 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView style="@style/Widget.MaterialComponents.CardView"
+    android:id="@+id/item_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:cardCornerRadius="5dp"
+    app:strokeColor="#B6B6B6"
+    app:cardElevation="3dp"
+    android:layout_marginTop="10dp"
+    app:contentPadding="2dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.cardview.widget.CardView
-        android:id="@+id/item_card"
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        app:cardCornerRadius="2dp"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="3dp"
-        >
-
         <RelativeLayout
+            android:id="@+id/relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            >
-
-
-            <TextView
-                android:id="@+id/cost"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@id/note"
-                android:drawableStart="@drawable/ic_attach_money_black_18dp"
-                android:layout_above="@id/note"
-                android:drawablePadding="4dp"
-                >
-
-            </TextView>
+            android:animateLayoutChanges="true">
             <TextView
                 android:id="@+id/category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                >
-
-            </TextView>
+                android:layout_marginLeft="18dp"
+                android:layout_centerHorizontal="true" />
             <TextView
+                android:id="@+id/cost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@id/date"
+                android:layout_marginRight="25dp"
+                android:drawableStart="@drawable/ic_attach_money_black_18dp"
+                android:drawablePadding="4dp"
+
+                android:inputType="numberDecimal" />
+            <TextView
+                android:id="@+id/cents"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+
+                android:layout_alignEnd="@id/cost"
+                android:layout_alignTop="@id/cost"
+                android:inputType="numberDecimal" />
+            <TextView
                 android:id="@+id/date"
-                android:layout_alignParentBottom="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/category"
                 android:textSize="15sp"
                 android:drawableStart="@drawable/ic_date_range_black_24dp"
+                android:drawablePadding="4dp"
                 />
             <TextView
-                android:layout_width="80dp"
-                android:layout_height="26dp"
-                android:textAlignment="textStart"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:paddingTop="4dp"
                 android:id="@+id/note"
+                android:layout_width="120dp"
+                android:layout_height="20dp"
+                android:layout_below="@id/date"
+                android:layout_marginRight="10dp"
+
+                android:textAlignment="textStart"
                 android:textSize= "15sp"
-                android:ellipsize="end"
+
                 android:maxLines="1"
+                android:ellipsize="end"
+
                 android:drawableStart="@drawable/ic_notes_18px"
                 android:drawablePadding="4dp"
                 />
+            <TextView
+                android:id="@+id/is_collapsed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="1"
+                ></TextView>
 
         </RelativeLayout>
-
-    </androidx.cardview.widget.CardView>
-
+</com.google.android.material.card.MaterialCardView>
 
 
-</LinearLayout>
